@@ -23,7 +23,7 @@ let registerSuccessMessage = false;
 const RegisterForm = observer(
   class RegisterForm extends Component {
 
-    state = { errorText: "" };
+    state = { errorText: "" , emailConfirmation: ""};
 
     /**
      * Constructor
@@ -51,13 +51,16 @@ const RegisterForm = observer(
         await authStore.register({
           username: signUpStore.username,
           email: signUpStore.email,
-          password: signUpStore.password
+          password: signUpStore.password,
+          name: "name", surname: "surname", birthday: "2019-05-04T20:39:55.956Z"
         })
           .then((response) => {
-            registerSuccessMessage = true;
+            // registerSuccessMessage = true;
             // once registered, set authStore credentials
+            response.data.data.user.active = false; // TODO: User inactive after registry (solve in server-side)
             authStore.setUserAuth(response.data.data);
-            userStore.setUserLogged(response.data.data)
+            userStore.setUserLogged(response.data.data.user)
+            this.setState({emailConfirmation: response.data.data.user.email});
           })
           .catch((error) => {
             this.setState({errorText: error.response.data});
@@ -66,12 +69,11 @@ const RegisterForm = observer(
         this.setState({errorText: {"errors":[{"message":"Password do not match"}]}});
       }
     }
-
     /**
      * Render
      */
     render() {
-      if (authStore.isLoggedIn()) {
+      if (authStore.isLoggedIn() ) {
         return <Redirect to={{ pathname: "/home", state: { registerSuccessMessage: registerSuccessMessage } }}/>;
       }
       return (
@@ -138,6 +140,15 @@ const RegisterForm = observer(
               <Message>
                 Already registered? <Link to={'/'}>Login</Link>
               </Message>
+              {this.state.emailConfirmation && 
+                <Message icon info size='big'>
+                  <Image src={logo} height="60"/>
+                    <Message.Content>
+                      <Message.Header>Thanks for signing up for Jared!</Message.Header>
+                      <p> We sent confirmation email to {this.state.emailConfirmation}</p>
+                  </Message.Content>
+                </Message>
+              }
             </Grid.Column>
           </Grid>
         </div>

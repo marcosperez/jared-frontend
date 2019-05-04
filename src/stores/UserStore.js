@@ -150,6 +150,15 @@ class UserStore {
   }
 
   /**
+   * Save logged user
+   * @param {any} userData 
+   */
+  setUserLogged(userData) {
+    this.user = userData;
+    this.parseData();
+  }
+
+  /**
    * get user from github
    */
   async getGitHubUser(githubID) {
@@ -241,7 +250,8 @@ decorate(UserStore, {
   getUserById: action,
   setError: action,
   addUserRole: action,
-  deleteUserRole: action
+  deleteUserRole: action,
+  setUserLogged: action,
 })
 
 let userStore = new UserStore();

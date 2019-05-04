@@ -47,7 +47,7 @@ class AuthStore {
   }
 
   isLoggedIn() {
-    return this.token && this.user;
+    return this.token && this.user && this.user.active;
   }
 
   getAvatar(query) {
